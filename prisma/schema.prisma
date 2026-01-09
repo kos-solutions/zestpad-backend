@@ -1,0 +1,50 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      String   @default("student") // "admin", "teacher", "student"
+  createdAt DateTime @default(now())
+}
+
+model Class {
+  id        Int      @id @default(autoincrement())
+  name      String
+  code      String   @unique // Codul de acces pentru elevi (ex: "MATH5B")
+  topics    Topic[]
+  createdAt DateTime @default(now())
+}
+
+model Topic {
+  id         Int      @id @default(autoincrement())
+  title      String
+  classId    Int
+  class      Class    @relation(fields: [classId], references: [id])
+  
+  // AICI ESTE MODIFICAREA NOUĂ
+  background String   @default("white") 
+  
+  lessons    Lesson[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Lesson {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?  // JSON-ul desenului (data saved from canvas)
+  topicId   Int
+  topic     Topic    @relation(fields: [topicId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
