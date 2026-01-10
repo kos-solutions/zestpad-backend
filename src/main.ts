@@ -1,11 +1,20 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-// DOAR TEMPORAR pentru debug – ȘTERGE după ce merge!
-console.log('DB_USER=', process.env.DB_USER);
-console.log('DB_PASS type=', typeof process.env.DB_PASS);
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+
+  // ✅ ACTIVĂM CORS (Vital pentru legătura cu Frontend-ul)
+  app.enableCors({
+    origin: '*', // Permite accesul de pe orice domeniu (inclusiv site-ul tău Vercel)
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
+  // Pornim serverul pe portul dat de Railway
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+  
+  console.log(`Application is running on port: ${port}`);
 }
 bootstrap();
