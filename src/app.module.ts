@@ -4,32 +4,21 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { ClassesModule } from './classes/classes.module'; // <--- Importă asta
+import { ClassesModule } from './classes/classes.module';
+
 @Module({
   imports: [
-    // 1) Încărcăm .env global
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-
-    // 2) Conexiune la Postgres (Varianta Railway)
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      // Folosim variabila DATABASE_URL care conține tot (user, parolă, host)
-      url: process.env.DATABASE_URL, 
-      
+      url: process.env.DATABASE_URL,
       autoLoadEntities: true,
-      synchronize: true, // În producție reală e false, dar pentru noi e ok acum
-      
-      // IMPORTANT: Railway cere conexiune securizată (SSL)
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      synchronize: true,
+      ssl: { rejectUnauthorized: false },
     }),
-
-    // 3) Modulele aplicației
     UsersModule,
     AuthModule,
+    ClassesModule,
   ],
 })
 export class AppModule {}

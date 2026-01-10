@@ -1,34 +1,33 @@
-// src/app.module.ts
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
-import { ClassesModule } from './classes/classes.module'; // <--- 1. IMPORT IMPORTANT
+import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
+import { UsersModule } from '../users/users.module';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
-    // Configurare .env
-    ConfigModule.forRoot({
-      isGlobal: true,
+    // 1. Module externe necesare
+    UsersModule, 
+    PassportModule,
+    
+    // 2. Configurare JWT
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (config: ConfigService) => ({
+        secret: config.get('JWT_SECRET') || 'secret',
+        signOptions: { expiresIn: '1d' },
+      }),
+      inject: [ConfigService],
     }),
-
-    // Configurare Bază de Date (Railway)
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      url: process.env.DATABASE_URL,
-      autoLoadEntities: true,
-      synchronize: true,
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    }),
-
-    // Modulele Aplicației
-    UsersModule,
-    AuthModule,
-    ClassesModule, // <--- 2. AICI TREBUIE SĂ FIE LISTAT!
   ],
+  controllers: [AuthController],
+  // Punem JwtStrategy la providers ca să funcționeze AuthGuard
+  providers: [AuthService, JwtStrategy],
+  exports: [AuthService],
 })
-export class AppModule {}
+// ✅ AICI ERA UNA DIN ERORI: Trebuie neapărat 'export'
+export class AuthModule {}
