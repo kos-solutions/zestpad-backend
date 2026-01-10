@@ -10,11 +10,9 @@ import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
-    // 1. Module externe necesare
     UsersModule, 
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }), // Specifcăm strategia default
     
-    // 2. Configurare JWT
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (config: ConfigService) => ({
@@ -25,9 +23,8 @@ import { JwtStrategy } from './jwt.strategy';
     }),
   ],
   controllers: [AuthController],
-  // Punem JwtStrategy la providers ca să funcționeze AuthGuard
   providers: [AuthService, JwtStrategy],
-  exports: [AuthService],
+  // ✅ IMPORTANT: Exportăm Passport și Strategia ca să le poată folosi și Clasele
+  exports: [AuthService, JwtStrategy, PassportModule], 
 })
-// ✅ AICI ERA UNA DIN ERORI: Trebuie neapărat 'export'
 export class AuthModule {}
