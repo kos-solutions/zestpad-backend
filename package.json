@@ -4,10 +4,10 @@
   "description": "ZestPad backend powered by NestJS + TypeORM + PostgreSQL",
   "main": "dist/main.js",
   "scripts": {
-    "dev": "nodemon src/index.ts",
-    "start": "node dist/index.js",
+    "dev": "nodemon src/main.ts",
+    "start": "node dist/main.js",
     "build": "npx prisma generate && tsc",
-    "start:railway": "npx prisma migrate deploy && node dist/index.js"
+    "start:railway": "npx prisma migrate deploy && node dist/main.js"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
