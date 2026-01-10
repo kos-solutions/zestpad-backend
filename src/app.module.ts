@@ -12,16 +12,19 @@ import { AuthModule } from './auth/auth.module';
       isGlobal: true,
     }),
 
-    // 2) Conexiune la Postgres
+    // 2) Conexiune la Postgres (Varianta Railway)
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT ?? '5432', 10),
-      username: process.env.DB_USER || 'zestpad',
-      password: process.env.DB_PASS || 'zestpad',
-      database: process.env.DB_NAME || 'zestdb',
+      // Folosim variabila DATABASE_URL care conține tot (user, parolă, host)
+      url: process.env.DATABASE_URL, 
+      
       autoLoadEntities: true,
-      synchronize: true, // doar pentru DEV! (în PROD se fac migrations)
+      synchronize: true, // În producție reală e false, dar pentru noi e ok acum
+      
+      // IMPORTANT: Railway cere conexiune securizată (SSL)
+      ssl: {
+        rejectUnauthorized: false,
+      },
     }),
 
     // 3) Modulele aplicației
