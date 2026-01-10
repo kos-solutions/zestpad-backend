@@ -11,24 +11,24 @@ export class ClassesService {
     private classesRepository: Repository<Class>,
   ) {}
 
-  // Crearea unei clase noi
   async create(dto: CreateClassDto, teacherId: number) {
-    // Generăm un cod aleator de 6 caractere
     const code = Math.random().toString(36).substring(2, 8).toUpperCase();
 
     const newClass = this.classesRepository.create({
       name: dto.name,
       code: code,
-      teacherId: teacherId, // AICI e secretul: legăm clasa de profesorul logat
+      // ✅ ACUM E SIGUR: Salvăm direct ID-ul primit din controller.
+      // Nu mai există ambiguitate pentru baza de date.
+      teacherId: teacherId, 
     });
 
     return this.classesRepository.save(newClass);
   }
 
-  // Găsește toate clasele unui profesor
   async findAllForTeacher(teacherId: number) {
     return this.classesRepository.find({
-      where: { teacherId },
+      // Putem căuta direct după ID
+      where: { teacherId: teacherId },
       order: { id: 'DESC' }
     });
   }
