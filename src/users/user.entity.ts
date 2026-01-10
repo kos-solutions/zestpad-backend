@@ -19,3 +19,4 @@ export class User {
   @Column({ default: 'student' }) 
   role: string;
 }
+// Update for Railway trigger 🚀
