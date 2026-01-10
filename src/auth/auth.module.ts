@@ -1,22 +1,34 @@
+// src/app.module.ts
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
-import { UsersModule } from '../users/users.module';
-import { JwtStrategy } from './jwt.strategy';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { ClassesModule } from './classes/classes.module'; // <--- 1. IMPORT IMPORTANT
 
 @Module({
   imports: [
-    UsersModule, // <-- ESENȚIAL: aduce UsersService exportat
-    PassportModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET ?? 'dev_secret',
-      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN ?? '1d' },
+    // Configurare .env
+    ConfigModule.forRoot({
+      isGlobal: true,
     }),
+
+    // Configurare Bază de Date (Railway)
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      url: process.env.DATABASE_URL,
+      autoLoadEntities: true,
+      synchronize: true,
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    }),
+
+    // Modulele Aplicației
+    UsersModule,
+    AuthModule,
+    ClassesModule, // <--- 2. AICI TREBUIE SĂ FIE LISTAT!
   ],
-  providers: [AuthService, JwtStrategy],
-  controllers: [AuthController],
-  exports: [AuthService],
 })
-export class AuthModule {}
+export class AppModule {}
