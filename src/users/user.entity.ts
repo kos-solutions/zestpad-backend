@@ -1,22 +1,21 @@
+// src/users/user.entity.ts
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-export type UserRole = 'student' | 'teacher' | 'parent' | 'admin';
-
-@Entity()
+@Entity('users') // Numele tabelei din baza de date
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  name: string;
-
   @Column({ unique: true })
   email: string;
 
-  // hash-ul parolei (NU păstrăm parole în clar)
   @Column()
   passwordHash: string;
 
-  @Column({ default: 'student' })
-  role: UserRole;
+  @Column({ nullable: true })
+  name: string;
+
+  // ✅ AICI ESTE CHEIA: Trebuie să avem coloana asta definită!
+  @Column({ default: 'student' }) 
+  role: string;
 }

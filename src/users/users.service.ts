@@ -1,3 +1,4 @@
+// src/users/users.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -22,6 +23,7 @@ export class UsersService {
     return this.usersRepository.findOneBy({ email });
   }
 
+  // Fiind Partial<User>, acceptă și { ..., role: 'teacher' } fără probleme
   async create(data: Partial<User>): Promise<User> {
     const user = this.usersRepository.create(data);
     return this.usersRepository.save(user);
