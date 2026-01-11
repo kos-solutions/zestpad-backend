@@ -1,3 +1,4 @@
+// src/topics/topic.entity.ts
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Class } from '../classes/class.entity';
 
@@ -9,15 +10,15 @@ export class Topic {
   @Column()
   title: string;
 
-  // Aici salvăm "paper-math", "paper-music", etc.
   @Column({ default: 'white' }) 
   background: string;
 
-  // Legătura cu Clasa
-  @ManyToOne(() => Class, (cls) => cls.topics, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'classId' })
-  class: Class;
-
   @Column({ name: 'classId' })
   classId: number;
+
+  // ✅ MODIFICAT: Am scos al doilea parametru care cauza eroarea.
+  // Acum relația este simplă și sigură.
+  @ManyToOne(() => Class, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'classId' })
+  class: Class;
 }
