@@ -14,12 +14,11 @@ export class ClassesService {
   async create(dto: CreateClassDto, teacherId: number) {
     const code = Math.random().toString(36).substring(2, 8).toUpperCase();
 
+    // ✅ Corect: TypeORM știe să lege relația doar primind ID-ul într-un obiect
     const newClass = this.classesRepository.create({
       name: dto.name,
       code: code,
-      // ✅ ACUM E SIGUR: Salvăm direct ID-ul primit din controller.
-      // Nu mai există ambiguitate pentru baza de date.
-      teacherId: teacherId, 
+      teacher: { id: teacherId } as any // "as any" ajută TypeScript să nu se plângă că lipsește restul userului
     });
 
     return this.classesRepository.save(newClass);
@@ -27,8 +26,7 @@ export class ClassesService {
 
   async findAllForTeacher(teacherId: number) {
     return this.classesRepository.find({
-      // Putem căuta direct după ID
-      where: { teacherId: teacherId },
+      where: { teacher: { id: teacherId } },
       order: { id: 'DESC' }
     });
   }

@@ -10,13 +10,11 @@ export class Class {
   name: string;
 
   @Column({ unique: true })
-  code: string; // Codul unic (ex: A7X22) prin care elevii intră
+  code: string;
 
-  // Legătura cu Profesorul (User)
-  @Column({ name: 'teacherId' })
-  teacherId: number;
-
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'teacherId' })
+  // ✅ PĂSTRĂM DOAR RELAȚIA
+  // TypeORM va crea automat coloana 'teacherId' în spate datorită @JoinColumn
+  @ManyToOne(() => User, { nullable: false }) // nullable: false face obligatorie legătura
+  @JoinColumn({ name: 'teacherId' }) 
   teacher: User;
 }
