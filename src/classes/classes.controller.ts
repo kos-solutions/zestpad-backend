@@ -10,13 +10,12 @@ export class ClassesController {
 
   @Post()
   create(@Body() dto: CreateClassDto, @Request() req) {
-    // 🔍 DEBUG: Vedem ce user a detectat serverul
-    console.log('User din request:', req.user);
-
-    const teacherId = req.user.sub; // ar trebui să fie ID-ul (ex: 1)
+    // ✅ MODIFICAT: Citim 'userId' pentru că așa ne-a arătat log-ul că vine din token
+    const teacherId = req.user.userId || req.user.sub; 
     
+    console.log('User ID extras:', teacherId); // Debug ca să fim siguri
+
     if (!teacherId) {
-       console.error("ALERTA: Nu am gasit ID-ul profesorului in token!");
        throw new BadRequestException("Nu te pot identifica. Te rog reloghează-te.");
     }
 
@@ -25,6 +24,8 @@ export class ClassesController {
 
   @Get()
   findAll(@Request() req) {
-    return this.classesService.findAllForTeacher(req.user.sub);
+    // ✅ MODIFICAT și aici
+    const teacherId = req.user.userId || req.user.sub;
+    return this.classesService.findAllForTeacher(teacherId);
   }
 }
